@@ -1,6 +1,5 @@
-/* hacked for tags + scrollbar */
 (function( $ ){
-    var ClassInputSelector = function($domTarget,$defaultAndOptions){
+    var ClassInputTokenizer = function($domTarget,$defaultAndOptions){
 	var $_E = {
 	    'container':$('<div class="mi_container"></div>'),
 	    'input':$($domTarget),
@@ -38,19 +37,15 @@
 	// listen the key pressed on the input
 	$_this.eventListenerInputKeyUp=function($event){
 	    $code= ($event.keyCode ? $event.keyCode : $event.which);
-	    if($code==13 || $code==40 || $code==38){// enter, up, down
+	    if($code==13 || $code==40 || $code==38){
 		$event.preventDefault();
 		return;
 	    }
 	    $searchTerm=$_E.input.val();
 	    clearTimeout($_timeOut);
 	    $_timeOut = setTimeout(function(){
-		if($searchTerm.length)
-		    $_this.search($searchTerm);
+		$_this.search($searchTerm);
 	    }, $_options.keyPressDelayBeforeSearch);
-	    
-	    $_E.input.closest('.error').removeClass('error');
-	    
 	    $event.preventDefault();
 	}
 	// avoid form send when pressing enter, select tag in drop down
@@ -72,22 +67,21 @@
 		    $_this.gotoTagInDropDown('previous','previous');
 		    $event.preventDefault();
 		    break;
-		    default:
 	    }
 	}
 	// searching
 	$_this.search=function($searchTerm){
-	    if($_ajaxInProgress != false){
+	    if($_ajaxInProgress){
 		$_ajaxInProgress.abort();
 	    }
 	    $_ajaxInProgress=$.ajax({
-		url: $_options.url+$searchTerm,
-		success:function($data){
+		'url':$_options.ajaxSearchUrl+$searchTerm,
+		'success':function($data){
 		    $_this.displayDropDown($.parseJSON($data));
 		    $_ajaxInProgress=false
 		},
-		error: function(){
-		    $_ajaxInProgress=false
+		'error':function(){
+                    $_ajaxInProgress=false
 		}
 	    });
 	}
@@ -171,7 +165,7 @@
 		    $which.addClass('hover');
 		    $index=0;
 		    $i=0;
-		    $_E.dropDownUl.children('li').each(function(){
+		   $_E.dropDownUl.children('li').each(function(){
 			if($(this).attr('id')==$which.attr('id'))
 			    $index=$i;
 			$i++;
@@ -194,30 +188,21 @@
 	    // add the value to the list
 	    $identity=$element.attr('id')?$element.attr('id'):$element.attr('name');
 	    if($.inArray($identity,$_values)==-1){
-		$_E.hidden.val($identity);
+		$_values.push($identity);
+		$_E.hidden.val($_values.join(';'));
 		// add box next to the input, with delete button
 		$li=$('<li/>');
-		$tagRemover=$('<div class="mi_tag_remover" id="'+$element.attr('id')+'">'+($_options.displayXForClosingOnTag?'x':'')+'</div>');
+		$tagRemover=$('<div class="mi_tag_remover" id="'+$element.attr('id')+'">x</div>');
 		$tagRemover.bind('click',$_this.removeTag);
 		$li.append('<div class="mi_tag '+($element.hasClass('create')?'create':'')+'">'+$element.html()+'</div>');
 		$li.append($tagRemover);
-		
-		if($_options.singleValue)
-		    $li.bind('click',function(){$(this).children('.mi_tag_remover').click()});
-		
-		$_E.ul.empty();
 		$_E.ul.append($li);
 		$_E.container.attr('width',($_E.container.width()+$li.width())+"px")
 	    }
 	    // hide the drop down, focus the input and empty it
 	    $_this.hideDropDown();
+	    $_E.input.focus();
 	    $_E.input.val('');
-	    if($_options.selectTag)
-		    $_options.selectTag.call($_E);
-	    if($_options.hideInputAfterSelection){
-		$_E.input.hide();
-	    }else
-		$_E.input.focus();
 	}
 	// hide the drop down menu
 	$_this.hideDropDown=function(){
@@ -235,8 +220,6 @@
 	    // write to hidden input
 	    $_E.hidden.val($_values.join(';'));
 	    $(this).parent().remove();
-	    $_E.input.show();
-	    $_E.input.focus();
 	}        
 	// CONSTRUCTOR
 	// wrap the element with a div, add a ul and add the drop down menu
@@ -263,14 +246,8 @@
 	$_E.input.bind('keydown',$_this.eventListenerInputKey);                               
 	if($_options.closingButton)$_E.dropDownCloser.bind('click',$_this.hideDropDown);  
 	// existing items
-	if($_options.defaultValue && $_options.defaultValue.id && $_options.defaultValue.name){
-		$_this.selectTag($('<li id="'+$_options.defaultValue.id+'">'+$_options.defaultValue.name+'</li>').get(0));
-	}
-	
-	if($_options.defaultValues && $_options.defaultValues.length){
-	    for($i in $_options.defaultValues)
-		$_this.selectTag($('<li id="'+$_options.defaultValues[$i].id+'">'+$_options.defaultValues[$i].name+'</li>').get(0));
-	}
+	if($_options.defaultValue && $_options.defaultValue.id && $_options.defaultValue.name)
+	    $_this.selectTag($('<li id="'+$_options.defaultValue.id+'">'+$_options.defaultValue.name+'</li>').get(0));
 	
 	// close on blur
 	$_onDropDown=false;
@@ -284,26 +261,21 @@
 	    if(!$_onDropDown)
 		$_this.hideDropDown();
 	});
-	
-	// defaults
-	if($_E.input.val()){
-	    $_this.selectTag($('<li id="'+$_E.input.val()+'">'+($_E.input.attr('crudsader-name').length ? $_E.input.attr('crudsader-name') :$_E.input.val())+'</li>').get(0));
-	}
         
     };
-    $.fn.input_selector = function( $options ) {
+    $.fn.inputTokenizer = function( $options ) {
 	// DEFINE OPTIONS AND DEFAULTS
-	var $_options = $.extend({}, $.fn.input_selector.defaults, $options);
+	var $_options = $.extend({}, $.fn.inputTokenizer.defaults, $options);
 	return this.each(function() {
-	    if(!$(this).data('input_selector'))
-		$(this).data('input_selector',new ClassInputSelector(this,$_options));
+	    new ClassInputTokenizer(this,$_options);
 	});
     };
     // DEFAULT VALUES
-    $.fn.input_selector.defaults = {
-	'url':'',
-	'displayXForClosingOnTag':true,
-	'hideInputAfterSelection': false,
-	singleValue:false
+    $.fn.inputTokenizer.defaults = {
+	'keyPressDelayBeforeSearch':300,
+	'ajaxSearchUrl':'',
+	'closingButton':false,
+	'scrollbar':true,
+	'defaultValue':null
     };
 })( jQuery);

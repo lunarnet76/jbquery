@@ -1,0 +1,79 @@
+div.mi_container{
+    display:inline;
+    float:none;
+    height: 28px;
+    font-size: 14px;
+    font-weight: bold;
+    text-decoration: none;
+    text-shadow: 0 1px rgba(255, 255, 255, .75);
+    cursor: pointer;
+}
+div.mi_container input{
+}
+div.mi_container ul{
+    display:inline;
+    float:none;
+}
+div.mi_container li{
+    padding-left: 5px;
+}
+div.mi_tag{
+    border: 1px solid white;
+    border-radius: 3px;
+    border-bottom-right-radius:0px;
+    border-top-right-radius:0px;
+    background-color: white;
+    float:left;
+}
+div.mi_tag_remover{
+    border: 1px solid #CCC;
+    border-radius: 3px;
+    border-left-radius:0px;
+    width:10px;
+    height: 20px;
+    background-color: #CCC;
+    float:left;
+    margin-right: 5px;
+}
+div.mi_container div.create{
+    opacity:0.37;
+    -moz-opacity:0.37;
+    filter:alpha(opacity=37);
+}
+div.mi_dropDown{
+    background-color: #EEE;
+    width: 150px;
+    border: 1px solid #CCC; 
+    border-radius: 3px;
+}
+div.mi_dropDown ul{
+    margin:0px;
+    padding:0px;
+    list-style: none;
+}
+div.mi_dropDown li{
+    background-color: grey;
+    width:144px;
+    padding: 2px 2px 2px 5px;
+    color:white;
+    cursor:pointer;
+}
+div.mi_dropDown li.create{
+    opacity:0.37;
+    -moz-opacity:0.37;
+    filter:alpha(opacity=37);
+}
+div.mi_dropDown li.hover{
+    background-color: #CCC;
+}
+div.mi_dropDownCloser{
+    background-color: white;
+    border: 1px solid #CCC; 
+    border-radius: 3px;
+    border-bottom-left-radius: 0px;
+    border-top-left-radius: 0px;
+    height: 24px;
+    padding-left: 10px;
+    width:18px;
+    margin-left: 2px;
+}
