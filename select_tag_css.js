@@ -99,10 +99,13 @@
 	    .text('select')
 	    .bind('click',$_this.toggleDropDown)
 	    
+	    
 	// hidden input
 	$_E.input
 	    .attr('name',$_E.target.attr('name'))
-	    .val($_E.target.val())
+	    
+	if($_E.target.val())
+	    $_E.input.val($_E.target.val())
 	
 	
 	// hide the input, but do not use hide method so we can still use events
