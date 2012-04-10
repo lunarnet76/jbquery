@@ -93,6 +93,10 @@
 	}
 	// displaying the drop down menu
 	$_this.displayDropDown=function($data){
+	    if($data.length == 0){
+		$_this.hideDropDown();
+		return;
+	    }
 	    $_data = $data;
 	    $_dropDownClose=false;
 	    // show the menu
@@ -132,6 +136,8 @@
 		    $_this.gotoTagInDropDown($(this));
 		});
 	    }
+	    
+	    
 	    
 	    // focus first element
 	    $_this.gotoTagInDropDown('first');
@@ -190,6 +196,8 @@
 	}
 	// selectin a tag from the drop down
 	$_this.selectTag=function($element){
+	    if($_E.container.hasClass('error'))
+		$_E.container.removeClass('error');
 	    $element=$($element);
 	    // add the value to the list
 	    $identity=$element.attr('id')?$element.attr('id'):$element.attr('name');
@@ -202,9 +210,10 @@
 		$li.append('<div class="mi_tag '+($element.hasClass('create')?'create':'')+'">'+$element.html()+'</div>');
 		$li.append($tagRemover);
 		
-		if($_options.singleValue)
-		    $li.bind('click',function(){$(this).children('.mi_tag_remover').click()});
-		
+		if($_options.singleValue){
+		    $li.bind('click',function(){$(this).children('.mi_tag_remover').click();$_E.input.show();});
+		    $_E.input.hide();
+		}
 		$_E.ul.empty();
 		$_E.ul.append($li);
 		$_E.container.attr('width',($_E.container.width()+$li.width())+"px")
@@ -241,6 +250,7 @@
 	// CONSTRUCTOR
 	// wrap the element with a div, add a ul and add the drop down menu
 	$_E.input.wrap($_E.container);
+	$_E.container = $_E.input.parent();
 	$_E.input.parent().prepend($_E.ul);
 	$('body').append($_E.dropDown);
 	//$_E.input.parent().append($_E.dropDown);
@@ -284,6 +294,15 @@
 	    if(!$_onDropDown)
 		$_this.hideDropDown();
 	});
+	if($_options.singleValue){
+		$_E.container.bind('click',function(){
+		    $(this).find('.mi_tag_remover').click();
+		    $_E.input.show()
+		})
+	}
+	
+	$_E.container.addClass($_E.input.attr('class'));
+	
 	
 	// defaults
 	if($_E.input.val()){

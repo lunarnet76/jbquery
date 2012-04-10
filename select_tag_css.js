@@ -5,7 +5,7 @@
 	    'target':$($domTarget),
 	    'drop_down':$('<ul></ul>'),
 	    'selector':$('<div></div>'),
-	    'label':$('<span></span>'),
+	    'label':$('<div></div>'),
 	    'input': $('<input type="hidden">')
 	};
 	
@@ -14,7 +14,7 @@
 	
 	// !METHODS
 	$_this.toggleDropDown = function($event){
-	    if($event.target.nodeName.toLowerCase() != 'div')return;
+	    //if($event.target.nodeName.toLowerCase() != 'div')return;
 	    if($_E.drop_down.is(':visible'))
 		$_E.drop_down.hide();
 	    else{
@@ -103,6 +103,9 @@
 	// hidden input
 	$_E.input
 	    .attr('name',$_E.target.attr('name'))
+	    
+	$_E.drop_down
+	    .attr('id',$_E.target.attr('id'))
 	    
 	if($_E.target.val())
 	    $_E.input.val($_E.target.val())
